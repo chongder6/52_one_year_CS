@@ -1,0 +1,85 @@
+#I will be uploading the code for kinship verification part before that uploading the GUI [coded using python] for uploading the 
+#images ( image 1 - the persons' image you want to compare, image 2 - with whom you want to compare 
+
+#The code starts here :
+
+from tkinter import *
+from PIL import ImageTk, Image
+from tkinter import filedialog
+from tkinter import messagebox
+
+
+def UploadAction1(event=None):
+    filename = filedialog.askopenfilename()
+    button2['state'] = 'normal'
+    print('Selected:', filename)
+    global f1     
+    img = Image.open(filename)
+    img = img.resize((64, 64), Image.ANTIALIAS)
+    photo = ImageTk.PhotoImage(img)
+    
+    label = Label(image=photo)
+    label.image = photo # keep a reference!
+    label.grid(column=0, row=3)
+    f1 = filename
+    
+def UploadAction2(event=None):
+    filename = filedialog.askopenfilename()
+    global f2
+    print('Selected:', filename)
+    submit['state'] = 'normal'
+   
+    img = Image.open(filename)
+    img = img.resize((64, 64), Image.ANTIALIAS)
+    photo = ImageTk.PhotoImage(img)
+    
+    label = Label(image=photo)
+    label.image = photo # keep a reference!
+    label.grid(column=10, row=3)
+  
+    f2 = filename
+     
+def SubmitAction():
+    
+    # form the parent-child image from the uploaded files
+    image = np.zeros((64, 64, 6))
+    #if file.split('.')[0][-1] == "1":
+    parent = plt.imread(f1)
+    image[:,:,0:3] = parent
+    #if file.split('.')[0][-1] == "2":
+    child = plt.imread(f2)
+    image[:,:,3:6] = child
+
+    x = model.predict_classes(image.reshape(1,64,64,6))
+    result = ""
+    
+    if(x[0] == 0):
+        result = "The relationship is father-daughter"
+    elif(x[0] == 1):
+        result = "The relationship is father-son"
+    elif(x[0] == 2):
+        result = "The relationship is mother-daughter"
+    elif(x[0] == 3):
+        result = "The relationship is mother-son"
+    msg = messagebox.showinfo( "Classification", result)
+    
+window = Tk()
+# to rename the title of the window you can also  write your name
+window.title("GUI")
+window.geometry("300x200")
+window.configure(background='grey')
+
+button1 = Button(window, text='Upload Image 1', command=UploadAction1)
+button1.grid(column=0, padx=10, pady=4, row=1)
+
+
+button2 = Button(window, text='Upload Image 2', command=UploadAction2, state=DISABLED)
+button2.grid(column = 10, padx=10, pady=4, row=1)
+
+submit = Button(window, text='Submit', command=SubmitAction, state=DISABLED)
+submit.grid(column = 3, row= 5)
+    
+window.mainloop()
+
+
+# if you want rest of the explaination you can go for the document file
