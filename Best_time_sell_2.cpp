@@ -1,3 +1,5 @@
+// A mathematical version using local maxima and local minima will be uploaded soon
+
 #include<iostream>
 #include<bits/stdc++.h>
 using namespace std;
